@@ -23,6 +23,8 @@
 	} while(0)
 
 #ifndef NODEBUG
+#define FLINFO(fmt,args...)                         \
+	do{debug_printf(INFO_VERBOSE,"[%s:%d]",__FILE__,__LINE__);debug_printf(INFO_VERBOSE,fmt,##args);} while(0)
 #define INFO(level, fmt, args...)					\
 	debug_printf(level, fmt, ##args)
 #define ASSERT(cond) do { if (!(cond)) DIE("%s:%d (%s): Assertion failed: %s", __FILE__, __LINE__, __FUNCTION__, #cond); } while (0)

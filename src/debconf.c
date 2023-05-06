@@ -203,6 +203,7 @@ int main(int argc, char **argv)
 {
 	struct sigaction sa;
 
+    FLINFO(" ");
 	sa.sa_handler = &sighandler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_NOCLDSTOP | SA_RESTART;
@@ -212,22 +213,27 @@ int main(int argc, char **argv)
 	signal(SIGTERM, sighandler);
 	signal(SIGUSR1, sighandler);
 	setlocale (LC_ALL, "");
+    FLINFO(" ");
 
 	config = config_new();
 	if (!config) {
 	  DIE("Cannot read new config");
 	}
 	parsecmdline(config, argc, argv);
+    FLINFO(" ");
 
     if (!priority)
         priority = getenv("DEBIAN_PRIORITY");
     if (priority)
         config->set(config, "_cmdline::priority", priority);
 
+    FLINFO(" ");
+
 	/* parse the configuration info */
 	if (config->read(config, DEBCONFCONFIG) == 0)
 		DIE("Error reading configuration information");
 
+    FLINFO(" ");
 	/* initialize database and frontend modules */
 	if ((templates = template_db_new(config, NULL)) == 0)
         	DIE("Cannot initialize debconf template database");
@@ -240,6 +246,7 @@ int main(int argc, char **argv)
 	if ((frontend = frontend_new(config, templates, questions)) == 0)
 		DIE("Cannot initialize debconf frontend");
 
+    FLINFO(" ");
     guess_owner(argv);
     
     /* set title */
@@ -255,7 +262,9 @@ int main(int argc, char **argv)
     else
         owner = "unknown";
 
+    FLINFO("BEFORE runconfigscript");
     runconfigscript(argc, argv);
+    FLINFO("AFTER runconfigscript");
 
     /* reset signal_received, otherwise ->communicate() will exit immediately */
     signal_received = 0;
@@ -263,13 +272,19 @@ int main(int argc, char **argv)
 	/* startup the confmodule; run the config script and talk to it */
 	confmodule = confmodule_new(config, templates, questions, frontend);
         confmodule->owner = owner;
+    FLINFO(" ");
 	confmodule->run(confmodule, argc - optind + 1, argv + optind - 1);
+    FLINFO(" ");
 	confmodule->communicate(confmodule);
+    FLINFO(" ");
         confmodule->shutdown(confmodule);
+    FLINFO(" ");
 
 	/* shutting down .... sync the database and shutdown the modules */
 	save();
+    FLINFO(" ");
 	cleanup();
+    FLINFO(" ");
 
 	return confmodule->exitcode;
 }
