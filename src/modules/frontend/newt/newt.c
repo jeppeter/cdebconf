@@ -1151,7 +1151,8 @@ newt_go(struct frontend *obj)
             else {
                 plugin = plugin_find(obj, q->template->type);
                 if (plugin) {
-                    INFO(INFO_DEBUG, "Found plugin for %s", q->template->type);
+                    //INFO(INFO_DEBUG, "Found plugin for %s", q->template->type);
+                    BACKTRACE_LOG("Found plugin for %s", q->template->type);
                     handler = (newt_handler *) plugin->handler;
                 } else {
                     INFO(INFO_DEBUG, "No plugin for %s", q->template->type);
